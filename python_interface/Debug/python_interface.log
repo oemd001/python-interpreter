@@ -1,3 +1,4 @@
-﻿  python_interface.cpp
-C:\Users\kenneth\Desktop\CSCI 230\python-interpreter\python_interface\interface.h(132,21): warning C4018: '<': signed/unsigned mismatch
+﻿  lexanalyzer.cpp
+C:\Users\kenneth\Desktop\CSCI 230\python-interpreter\python_interface\lexanalyzer.cpp(20,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\kenneth\Desktop\CSCI 230\python-interpreter\python_interface\lexanalyzer.cpp(154,21): warning C4018: '<': signed/unsigned mismatch
   python_interface.vcxproj -> C:\Users\kenneth\Desktop\CSCI 230\python-interpreter\Debug\python_interface.exe
