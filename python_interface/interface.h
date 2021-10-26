@@ -19,10 +19,15 @@ public:
 	void help(string);
 	void help(); 
 	void show(); 
-	void show(string); //<-- TODO
-	void clear(); 
+	void show(string); 
+	void clear(); //<-- need to udpate this
 	void clear_try(); 
-	void debug(); 
+	void expression(string); 
+	void add(string);
+	void messages();
+
+	//<-- need a method that can read/evaluate arithmetic and logical expressions with numeric literals
+
 
 };
 

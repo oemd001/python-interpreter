@@ -1,9 +1,11 @@
 #include <iostream>
 #include "interface.h"
 #include "lexanalyzer.h"
+#include "expevaluator.h"
 #include <vector>
 #include <string>
 #include <regex>
+#include <sstream>
 
 //this was used in read(file.py)
 #include <sys/types.h>
@@ -13,8 +15,12 @@
 using namespace std;
 
 static vector<string> program_vector;
+expEvaluator obj;
 
 void Interface::startInterface() {
+	// program 3 req
+	expEvaluator expEvaluation;
+
 	//greeting message, this will only appear once
 	cout << "PySub Interpreter v. 1.0 on Windows (September 2021)" << endl;
 	cout << "Enter program lines or read<filename>.py> on the command line interface" << endl;
@@ -24,7 +30,7 @@ void Interface::startInterface() {
 	string input = "";
 	while (input != "quit") {
 		cout << ">>> ";
-		cin >> input;
+		getline(cin, input);
 		//differentiate between "help" and "help()". The key difference here is using the parentheses
 		if (input.find("help(") != string::npos) {
 			//this parses word in between the parentheses. If there is no parentheses, this would be invalid
@@ -64,8 +70,21 @@ void Interface::startInterface() {
 		else if (input.find("cls") != string::npos) {
 			clear_try();
 		}
+		else if (input.find("add") != string::npos) {
+			unsigned first = input.find("(");
+			unsigned last = input.find(")");
+			string args = input.substr(first + 1, last - first - 1);
+			add(args);
+		
+		}
+		else if (input.find("messages") != string::npos) {
+			messages();
+		}
 		else {
-			cout << "Pleae enter a valid command!" << endl;
+			string str = input;
+			cout << endl;
+			expression(str);
+			cout << endl;
 		}
 
 	}
@@ -74,6 +93,7 @@ void Interface::startInterface() {
 //MUST be .py, can't read just any other filetype
 //usage: read(<filename>.py)
 //__cplusplus --> I have 199711L (C++ 98 or C++03)
+
 void Interface::read(string file) {
 	//this checks if the file exists
 	ifstream f(file.c_str());
@@ -104,6 +124,22 @@ void Interface::read(string file) {
 		}
 		cout << endl;
 
+	}
+}
+
+void Interface::add(string input) {
+	stringstream ss(input);
+	istream_iterator<string> begin(ss);
+	istream_iterator<string> end;
+	vector<string>list(begin, end);
+
+	if (list.size() < 2 ) {
+		cout << "Please enter two values seperated by a space" << endl;
+		cout << "Example:" << endl;
+		cout << "You U" << endl;
+	}
+	else {
+		obj.add(input);
 	}
 }
 
@@ -142,9 +178,14 @@ void Interface::show() {
 	}
 }
 
+void Interface::messages() {
+	obj.view_messages();
+}
+
 void Interface::clear() {
 	program_vector.clear();
 	program_vector.shrink_to_fit();
+	obj.clear_data();
 	cout << "Contents cleared" << endl;
 }
 
@@ -209,7 +250,10 @@ void Interface::help() {
 			cout << "quit() " << endl;
 			cout << "read()" << "    ";
 			cout << "cls()" << "    ";
-			cout << "show() " << endl << endl;
+			cout << "show() " << "    ";
+			cout << "messages() " << endl;
+			cout << "add() " << "    ";
+			cout << "\"Expressions\" ";
 		}
 		else if (input.find("cls") != string::npos) {
 			cout << "This command clears the contents of a crowded console." << endl;
@@ -220,8 +264,25 @@ void Interface::help() {
 		else if (input.find("exit") != string::npos) {
 			break;
 		}
+		else if (input.find("messages()") != string::npos) {
+			cout << "This command allows you to view all the existing values you put on the symbol table" << endl << endl;
+			cout << "Usage: " << endl;
+			cout << "     " << "messages()" << endl;
+		}
+		else if (input.find("add()") != string::npos) {
+			cout << "This command allows you to add custom key/value combinations to the symboltable" << endl;
+			cout << "In order to use this command effectively, the key/value combination MUST BE seperated by a space" << endl;
+			cout << "Usage: " << endl;
+			cout << "     " << "add(key value)" << endl;
+		}
+		else if (input.find("Expressions") != string::npos) {
+			cout << "To activate the expression calculator functionalty, simply enter an expression anytime on the command window" << endl << endl;
+			cout << "Usage:" << endl;
+			cout << "     " << "(3 + 2)" << endl;
+		}
 		else {
-			cout << "Please enter a valid command!" << endl;
+			cout << "Please enter a valid command!" << endl << endl;
+			cout << "If you're looking to enter an expression, do something like: (3 + 2) and click enter" << endl;
 		}
 	}
 }
@@ -275,7 +336,10 @@ void Interface::help(string input) {
 		cout << "quit() " << endl;
 		cout << "read()" << "    ";
 		cout << "cls()" << "    ";
-		cout << "show() " << endl << endl;
+		cout << "show() " << "    ";
+		cout << "messages() " << endl;
+		cout << "add() " << "    ";
+		cout << "\"Expressions\" ";
 	}
 	else if (input.find("cls") != string::npos) {
 		cout << "This command clears the contents of a crowded console." << endl;
@@ -283,8 +347,25 @@ void Interface::help(string input) {
 		cout << "Usage:" << endl;
 		cout << "     " << "cls" << endl;
 	}
+	else if (input.find("messages()") != string::npos) {
+		cout << "This command allows you to view all the existing values you put on the symbol table" << endl << endl;
+		cout << "Usage: " << endl;
+		cout << "     " << "messages()" << endl;
+	}
+	else if (input.find("add()") != string::npos) {
+		cout << "This command allows you to add custom key/value combinations to the symboltable" << endl;
+		cout << "In order to use this command effectively, the key/value combination MUST BE seperated by a space" << endl;
+		cout << "Usage: " << endl;
+		cout << "     " << "add(key value)" << endl;
+	}
+	else if (input.find("Expressions") != string::npos) {
+		cout << "To activate the expression calculator functionalty, simply enter an expression anytime on the command window" << endl << endl;
+		cout << "Usage:" << endl;
+		cout << "     " << "(3 + 2)" << endl;
+	}
 	else {
-		cout << "Please enter a valid command!" << endl;
+		cout << "Please enter a valid command!" << endl << endl;
+		cout << "If you're looking to enter an expression, do something like: (3 + 2) and click enter" << endl;
 	}
 }
 
@@ -299,9 +380,29 @@ void Interface::clear_try() {
 	}
 }
 
-void Interface::debug() {
-	for (string i : program_vector) {
-		cout << i;
-		cout << endl;
-	}
+void Interface::expression(string input) {
+	expEvaluator start;
+	start.expEvaluator::init();
+	//string input = "1 < 5";
+	//string input = "19 - 4 + 22 / 11 * 5 % 3 - 1"; 
+	//string input = "(3 + 5)";
+	//string input = "22 - (30 / 15) + (4 * 3 - 2) / 5";
+	//string input = "22 - ( 30 / 15 ) + ( 4 * 3 - 2 ) / 5"; 
+	//string input = "(35 / 7 * 2) < (44 % 10 + 2) or (18 + 4 / 2) == (4 * 5)";
+	//string input = "(7 + 3) <= 25 and ((4 * 5) == (14 + 3) or not(100 >= (40 * 2)))";
+	//string input = "1 and 0";
+	//string input = "not(1)";
+
+	//string input = "19-4+22/11*5%3-1";
+	//string input = "(3+5)";
+	//string input = "22-(30/15)+(4*3-2)/5";
+	//string input = "(35 / 7 * 2) < (44 % 10 + 2) or (18 + 4 / 2) == (4 * 5)";
+	//string input = "(7+3)<=25and((4*5)==(14+3)or not(100>=(40*2)))";
+	//string input = "(7+3) <= 25 and ((4*5)==(14+3)or not(100>=(40*2)))";
+	string result = start.expEvaluator::infix_postfix_conv(input);
+	cout << "Infix expression: " << input << endl;
+	cout << "Postfix expression: " << result << endl;
+	cout << "Evaluated answer: " << start.expEvaluator::calc_postfix_exp(result) << endl;
+	//cout << result;
 }
+

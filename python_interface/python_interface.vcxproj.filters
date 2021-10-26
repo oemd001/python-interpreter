@@ -24,12 +24,18 @@
     <ClCompile Include="lexanalyzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="expevaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="interface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="lexanalyzer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="expevaluator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
